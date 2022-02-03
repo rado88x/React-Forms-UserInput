@@ -1,36 +1,29 @@
-import { useState } from "react";
-
 import useInput from "../hooks/use-input";
 
 const SimpleInput = (props) => {
   const {
     value: enteredName,
-    hasError: nameInputHasError,
     isValid: enteredNameIsValid,
+    hasError: nameInputHasError,
     valueChangeHandler: nameChangedHandler,
     inputBlurHandler: nameBlurHandler,
     reset: resetNameInput,
   } = useInput((value) => value.trim() !== "");
 
-  const [enteredEmail, setEnteredEmail] = useState("");
-  const [enteredEmailTouched, setEnteredEmailTouched] = useState(false);
-
-  const enteredEmailIsValid = enteredEmail.includes("@");
-  const enteredEmailIsInvalid = !enteredEmailIsValid && enteredEmailTouched;
+  const {
+    value: enteredEmail,
+    isValid: enteredEmailIsvalid,
+    hasError: emailInputHasError,
+    valueChangeHandler: emailChangeHandler,
+    inputBlurHandler: emailBlurHandler,
+    reset: resetEmailInput,
+  } = useInput((value) => value.includes("@"));
 
   let formIsValid = false;
 
-  if (enteredNameIsValid && enteredEmailIsValid) {
+  if (enteredNameIsValid && enteredEmailIsvalid) {
     formIsValid = true;
   }
-
-  const emailInputChageHandler = (event) => {
-    setEnteredEmail(event.target.value);
-  };
-
-  const emailInputBlueHandler = (event) => {
-    setEnteredEmailTouched(true);
-  };
 
   const formSubmissionHandler = (event) => {
     event.preventDefault();
@@ -41,18 +34,16 @@ const SimpleInput = (props) => {
 
     console.log(enteredName);
 
-
-    resetNameInput ();
-
-    setEnteredEmail("");
-    setEnteredEmailTouched(false);
+    // nameInputRef.current.value = ''; => NOT IDEAL, DON'T MANIPULATE THE DOM
+    resetNameInput();
+    resetEmailInput();
   };
 
   const nameInputClasses = nameInputHasError
-    ? "form-control  invalid"
+    ? "form-control invalid"
     : "form-control";
 
-  const emailInputClasses = enteredEmailIsInvalid
+  const emailInputClasses = emailInputHasError
     ? "form-control invalid"
     : "form-control";
 
@@ -68,20 +59,20 @@ const SimpleInput = (props) => {
           value={enteredName}
         />
         {nameInputHasError && (
-          <p className="error-text">Name must be not empty!</p>
+          <p className="error-text">Name must not be empty.</p>
         )}
       </div>
       <div className={emailInputClasses}>
-        <label htmlFor="email">Your E-mail</label>
+        <label htmlFor="email">Your E-Mail</label>
         <input
           type="email"
           id="email"
-          onChange={emailInputChageHandler}
-          onBlur={emailInputBlueHandler}
+          onChange={emailChangeHandler}
+          onBlur={emailBlurHandler}
           value={enteredEmail}
         />
-        {enteredEmailIsInvalid && (
-          <p className="error-text">Please enter a valid email!</p>
+        {emailInputHasError && (
+          <p className="error-text">Please enter a valid email.</p>
         )}
       </div>
       <div className="form-actions">
